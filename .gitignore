@@ -1,0 +1,57 @@
+﻿# Secrets and environment
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Dependencies
+node_modules/
+.venv/
+venv/
+
+# Build output
+dist/
+build/
+.next/
+coverage/
+*.tsbuildinfo
+
+# PostgreSQL and local data
+data/
+.runtime/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.backup
+*.sql.gz
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Logs and caches
+*.log
+.npm-cache/
+.cache/
+.temp/
+.tmp/
+
+# Local tools
+.aider*
+.opencode/
+opencode.json.backup
+
+# OS and IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

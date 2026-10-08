@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum LeadStatus {
+  NEW
+  QUALIFIED
+  CONTACTED
+  CONVERTED
+  LOST
+}
+
+model User {
+  id              String            @id @default(cuid())
+  email           String            @unique
+  name            String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  ownedWorkspaces Workspace[]       @relation("WorkspaceOwner")
+  memberships     WorkspaceMember[]
+}
+
+model Workspace {
+  id          String            @id @default(cuid())
+  name        String
+  ownerId     String
+
+  owner       User              @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     WorkspaceMember[]
+  companies   Company[]
+  searches    SearchRun[]
+
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([ownerId])
+}
+
+model WorkspaceMember {
+  id          String    @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String    @default("MEMBER")
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime  @default(now())
+
+  @@unique([workspaceId, userId])
+  @@index([userId])
+}
+
+model Company {
+  id          String     @id @default(cuid())
+  workspaceId String
+
+  name        String
+  domain      String?
+  website     String?
+  industry    String?
+  country     String?
+  city        String?
+  description String?
+  sourceId    String?
+  sourceUrl   String?
+  foundAt     DateTime?
+  enrichedAt  DateTime?
+
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  leads       Lead[]
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([workspaceId])
+  @@index([domain])
+  @@unique([workspaceId, sourceId])
+}
+
+model Lead {
+  id          String     @id @default(cuid())
+  companyId   String
+
+  firstName   String?
+  lastName    String?
+  email       String?
+  phone       String?
+  jobTitle    String?
+  source      String?
+  status      LeadStatus @default(NEW)
+  aiScore     Float?
+  contactKey  String?
+
+  company     Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([companyId])
+  @@index([status])
+  @@index([email])
+  @@unique([companyId, contactKey])
+}
+
+model SearchRun {
+  id          String @id @default(cuid())
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  niche       String
+  city        String
+  status      String @default("RUNNING")
+  count       Int @default(0)
+  error       String?
+  createdAt   DateTime @default(now())
+  finishedAt  DateTime?
+  @@index([workspaceId, createdAt])
+}

@@ -1,0 +1,28 @@
+﻿{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama",
+      "options": {
+        "baseURL": "http://localhost:11434/v1"
+      },
+      "models": {
+        "qwen3:4b": {
+          "name": "Qwen3 4B"
+        }
+      }
+    }
+  },
+  "agent": {
+    "direct-build": {
+      "description": "Direct LeadFactory coding agent. Work directly with project files and shell. Do not delegate tasks to subagents.",
+      "mode": "primary",
+      "model": "ollama/qwen3:4b",
+      "tools": {
+        "task": false,
+        "todowrite": false
+      }
+    }
+  }
+}
